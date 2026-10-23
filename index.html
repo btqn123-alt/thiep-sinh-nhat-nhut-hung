@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lời Mời Sinh Nhật | Birthday Invitation</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome CDN cho Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Playfair Display & Great Vibes cho phong cách Luxury -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            100: '#FFF9E6',
+                            300: '#FCE081',
+                            400: '#E2B842',
+                            500: '#D4AF37',
+                            600: '#AA820A',
+                            800: '#6B5000',
+                        },
+                        darkBg: '#0A0A0C',
+                        cardBg: '#121216',
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        script: ['"Great Vibes"', 'cursive'],
+                        sans: ['"Montserrat"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Hiệu ứng viền vàng ánh kim Luxury */
+        .gold-border-gradient {
+            border-image: linear-gradient(135deg, #FFE58F 0%, #D4AF37 50%, #5B4400 100%) 1;
+        }
+
+        .gold-text-gradient {
+            background: linear-gradient(135deg, #FFF0B3 0%, #D4AF37 50%, #997A15 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-bg-gradient {
+            background: linear-gradient(135deg, #D4AF37 0%, #AA820A 100%);
+        }
+
+        .gold-glow {
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.25);
+        }
+
+        .gold-glow-hover:hover {
+            box-shadow: 0 0 35px rgba(212, 175, 55, 0.45);
+        }
+
+        /* Tùy chỉnh hiệu ứng canvas pháo hoa chìm trong nền */
+        #fireworksCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: auto; /* Cho phép bấm kích hoạt pháo hoa */
+            z-index: 1;
+        }
+
+        /* Glassmorphism hiệu ứng kính mờ sang trọng */
+        .glass-card {
+            background: rgba(18, 18, 22, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        /* CSS Animation cho Phong Bì (Envelope) */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+
+        .envelope {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Scrollbar sang trọng */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0A0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-200 font-sans overflow-x-hidden relative selection:bg-gold-500 selection:text-black">
+
+    <!-- Canvas Pháo Hoa Tương Tác -->
+    <canvas id="fireworksCanvas"></canvas>
+
+    <!-- Nút Bật/Tắt Âm Nhạc Nền (Floating Music Controller) -->
+    <div class="fixed top-6 right-6 z-50">
+        <button id="musicToggleBtn" onclick="toggleAudio()" class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-gold-400 border border-gold-500/50 hover:bg-gold-500 hover:text-black transition-all duration-300 shadow-lg gold-glow">
+            <i id="musicIcon" class="fas font-solid fa-music text-lg animate-pulse"></i>
+        </button>
+    </div>
+
+    <!-- Màn Hình Mở Phong Bì (Envelope Opening Overlay) -->
+    <div id="envelopeOverlay" class="fixed inset-0 z-40 flex items-center justify-center bg-black/90 p-4 transition-opacity duration-1000">
+        <div class="envelope-wrapper max-w-md w-full text-center">
+            <div class="glass-card rounded-2xl p-8 border-2 border-gold-500/60 shadow-2xl relative overflow-hidden gold-glow">
+                <div class="absolute -top-12 -right-12 w-32 h-32 bg-gold-500/10 rounded-full blur-2xl"></div>
+                
+                <div class="mb-6">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-gold-400/80 flex items-center justify-center bg-gold-500/10">
+                        <i class="fas fa-crown text-3xl gold-text-gradient"></i>
+                    </div>
+                    <p class="text-gold-400 font-serif tracking-widest uppercase text-xs mb-1">Thiệp mời</p>
+                    <h2 class="font-script text-4xl text-white">Trân Trọng Kính Mời</h2>
+                </div>
+
+                <p class="text-gray-300 text-sm mb-8 leading-relaxed font-light">
+                    Bạn được mời tới tham dự bữa tiệc sinh nhật đặc biệt của Senior Manager DƯƠNG NHỰT HÙNG. Nhấn nút bên dưới để mở thiệp mừng.
+                </p>
+
+                <button onclick="openEnvelope()" class="w-full py-3.5 px-6 rounded-xl gold-bg-gradient text-black font-semibold uppercase tracking-wider text-sm shadow-xl hover:opacity-95 transform hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
+                    <i class="fas fa-envelope-open mr-2"></i> Mở Thiệp Mời
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NỘI DUNG CHÍNH CỦA THIỆP MỜI -->
+    <main class="relative z-10 min-h-screen py-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-16">
+
+        <!-- HEADER / HERO SECTION -->
+        <section class="text-center pt-8 space-y-6">
+            <div class="inline-block px-4 py-1.5 rounded-full border border-gold-500/40 bg-gold-500/5 text-gold-300 text-xs tracking-widest uppercase mb-2">
+                ✨ Senior Manager DƯƠNG NHỰT HÙNG ✨
+            </div>
+            
+            <h1 class="font-script text-6xl sm:text-7xl lg:text-8xl gold-text-gradient font-bold drop-shadow-md">
+               🍻 🍻 🍻 
+            </h1>
+            
+            <p class="font-serif italic text-xl sm:text-2xl text-gray-300 font-light">
+                Hân hạnh đón tiếp TT tới dự tiệc mừng sinh nhật của TD
+            </p>
+
+            <div class="flex items-center justify-center space-x-4 my-6">
+                <div class="h-[1px] w-16 bg-gradient-to-r from-transparent to-gold-500"></div>
+                <i class="fas fa-gem text-gold-400 text-sm"></i>
+                <div class="h-[1px] w-16 bg-gradient-to-l from-transparent to-gold-500"></div>
+            </div>
+        </section>
+
+        <!-- ĐỒNG HỒ ĐẾM NGƯỢC (COUNTDOWN TIMER) -->
+        <section class="glass-card rounded-2xl p-6 sm:p-8 border border-gold-500/30 text-center relative overflow-hidden shadow-2xl">
+            <h3 class="font-serif text-lg text-gold-300 tracking-wider uppercase mb-6">Đếm Thời Gian</h3>
+            <div id="countdown" class="grid grid-cols-4 gap-3 sm:gap-6">
+                <div class="bg-black/40 border border-gold-500/20 rounded-xl p-3 sm:p-4">
+                    <span id="days" class="block font-serif text-2xl sm:text-4xl text-gold-400 font-bold">00</span>
+                    <span class="text-[10px] sm:text-xs uppercase tracking-widest text-gray-400">Ngày</span>
+                </div>
+                <div class="bg-black/40 border border-gold-500/20 rounded-xl p-3 sm:p-4">
+                    <span id="hours" class="block font-serif text-2xl sm:text-4xl text-gold-400 font-bold">00</span>
+                    <span class="text-[10px] sm:text-xs uppercase tracking-widest text-gray-400">Giờ</span>
+                </div>
+                <div class="bg-black/40 border border-gold-500/20 rounded-xl p-3 sm:p-4">
+                    <span id="minutes" class="block font-serif text-2xl sm:text-4xl text-gold-400 font-bold">00</span>
+                    <span class="text-[10px] sm:text-xs uppercase tracking-widest text-gray-400">Phút</span>
+                </div>
+                <div class="bg-black/40 border border-gold-500/20 rounded-xl p-3 sm:p-4">
+                    <span id="seconds" class="block font-serif text-2xl sm:text-4xl text-gold-400 font-bold">00</span>
+                    <span class="text-[10px] sm:text-xs uppercase tracking-widest text-gray-400">Giây</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- THÔNG TIN SỰ KIỆN (EVENT DETAILS) -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Thời gian -->
+            <div class="glass-card rounded-xl p-6 text-center border border-gold-500/30 hover:border-gold-500/60 transition-all gold-glow-hover">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full border border-gold-400/50 flex items-center justify-center bg-gold-500/10 text-gold-400 text-xl">
+                    <i class="far fa-calendar-alt"></i>
+                </div>
+                <h4 class="font-serif text-lg text-gold-300 font-semibold mb-1">Thời Gian</h4>
+                <p class="text-white font-medium text-lg">06:30 PM</p>
+                <p class="text-gray-400 text-sm mt-1">Thứ Bảy, Ngày 24 Tháng 10</p>
+            </div>
+
+            <!-- Địa điểm -->
+            <div class="glass-card rounded-xl p-6 text-center border border-gold-500/30 hover:border-gold-500/60 transition-all gold-glow-hover">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full border border-gold-400/50 flex items-center justify-center bg-gold-500/10 text-gold-400 text-xl">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h4 class="font-serif text-lg text-gold-300 font-semibold mb-1">Địa Điểm</h4>
+                <p class="text-white font-medium text-lg">Quán Nhà Mợ 2</p>
+                <p class="text-gray-400 text-sm mt-1">49/2 Đường TL 41, An Phú Đông, Hồ Chí Minh, Việt Nam</p>
+            </div>
+
+            <!-- Trang phục (Dress Code) -->
+            <div class="glass-card rounded-xl p-6 text-center border border-gold-500/30 hover:border-gold-500/60 transition-all gold-glow-hover">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full border border-gold-400/50 flex items-center justify-center bg-gold-500/10 text-gold-400 text-xl">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h4 class="font-serif text-lg text-gold-300 font-semibold mb-1">Trang Phục</h4>
+                <p class="text-white font-medium text-lg">Tự Do</p>
+            </div>
+        </section>
+
+        <!-- KHU VỰC BẢN ĐỒ GOOGLE MAPS -->
+        <section class="glass-card rounded-2xl p-6 sm:p-8 border border-gold-500/30 shadow-2xl space-y-6">
+            <div class="text-center">
+                <h3 class="font-serif text-2xl text-gold-300 font-bold mb-2">Bản Đồ Chỉ Đường</h3>
+                <p class="text-gray-400 text-sm">Rất hân hạnh được đón tiếp TT tại địa điểm dưới đây</p>
+            </div>
+
+            <!-- Khung Google Map Embed -->
+            <div class="relative w-full h-80 sm:h-96 rounded-xl overflow-hidden border border-gold-500/40 shadow-inner">
+                <iframe 
+                    title="Google Map Venue Location"
+                    src="https://maps.app.goo.gl/y7TXKxT7bdVDWfyc7" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:0; filter: grayscale(20%) contrast(1.1) opacity(0.9);" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+
+            <div class="text-center pt-2">
+                <a href="https://maps.app.goo.gl/y7TXKxT7bdVDWfyc7" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-6 py-3 rounded-xl border border-gold-500 text-gold-300 hover:bg-gold-500 hover:text-black transition-all duration-300 font-medium text-sm">
+                    <i class="fas fa-directions mr-2 text-base"></i> Xem Chỉ Đường Trên Google Maps
+                </a>
+            </div>
+        </section>
+
+        <!-- FORM ĐĂNG KÝ THAM DỰ -->
+        <section class="glass-card rounded-2xl p-6 sm:p-10 border border-gold-500/40 shadow-2xl max-w-2xl mx-auto">
+            <div class="text-center mb-8">
+                <h3 class="font-serif text-3xl gold-text-gradient font-bold mb-2">Xác Nhận Tham Dự (RSVP)</h3>
+                <p class="text-gray-300 text-sm">Vui lòng phản hồi trước 15:00 ngày 24/10 để chúng tôi chuẩn bị chu đáo nhất</p>
+            </div>
+
+            <form id="rsvpForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-gold-300 mb-2 font-medium">Họ và Tên *</label>
+                    <input type="text" required placeholder="Nhập tên của bạn..." class="w-full bg-black/50 border border-gold-500/30 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gold-400 transition-colors">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-gold-300 mb-2 font-medium">Số Điện Thoại</label>
+                        <input type="tel" placeholder="0901234567..." class="w-full bg-black/50 border border-gold-500/30 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gold-400 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-gold-300 mb-2 font-medium">Số Người Tham Dự *</label>
+                        <select class="w-full bg-black/50 border border-gold-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-gold-400 transition-colors">
+                            <option value="1" class="bg-cardBg">1 Người</option>
+                            <option value="2" class="bg-cardBg">2 Người (+1 người đi cùng)</option>
+                            <option value="0" class="bg-cardBg">Rất tiếc, tôi không thể tới dự</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-gold-300 mb-2 font-medium">Lời Chúc Sinh Nhật</label>
+                    <textarea rows="3" placeholder="Gửi lời chúc tốt đẹp nhất tới chủ nhân buổi tiệc..." class="w-full bg-black/50 border border-gold-500/30 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gold-400 transition-colors"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-4 rounded-xl gold-bg-gradient text-black font-bold uppercase tracking-wider text-sm shadow-xl hover:opacity-95 transform hover:-translate-y-0.5 transition-all cursor-pointer">
+                    <i class="fas fa-paper-plane mr-2"></i> Gửi Xác Nhận Tham Dự
+                </button>
+            </form>
+
+            <!-- Khung thông báo gửi thành công -->
+            <div id="successMessage" class="hidden text-center py-8 space-y-4">
+                <div class="w-16 h-16 mx-auto rounded-full border-2 border-gold-400 flex items-center justify-center bg-gold-500/10 text-gold-400 text-2xl">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h4 class="font-serif text-2xl text-gold-300 font-bold">Cảm Ơn Bạn!</h4>
+                <p class="text-gray-300 text-sm">Thông tin xác nhận của bạn đã được lưu lại. Rất hân hạnh được đón tiếp TT tại tiệc sinh nhật!</p>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="text-center py-8 text-gray-500 text-xs border-t border-gold-500/20 space-y-2">
+            <p class="font-serif italic text-gold-400/80 text-sm">"Sự hiện diện của bạn là món quà ý nghĩa nhất dành cho Hùng."</p>
+        </footer>
+    </main>
+
+    <!-- Thẻ Audio Nhạc Nền (Sử dụng link âm thanh nhẹ nhàng thư giãn) -->
+    <audio id="bgAudio" loop preload="auto">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-beautiful-dream-493.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- SCRIPTS XỬ LÝ SỰ KIỆN VÀ PHÁO HOA -->
+    <script>
+        // --- 1. XỬ LÝ MỞ PHONG BÌ & PHÁT NHẠC ---
+        let isAudioPlaying = false;
+        const audio = document.getElementById('bgAudio');
+        const musicIcon = document.getElementById('musicIcon');
+
+        function openEnvelope() {
+            const overlay = document.getElementById('envelopeOverlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 1000);
+
+            // Bật nhạc nền khi mở phong bì
+            playAudio();
+
+            // Bắn một đợt pháo hoa chào mừng
+            launchWelcomeFireworks();
+        }
+
+        function playAudio() {
+            audio.play().then(() => {
+                isAudioPlaying = true;
+                musicIcon.classList.remove('fa-music');
+                musicIcon.classList.add('fa-compact-disc', 'fa-spin');
+            }).catch(e => {
+                console.log("Auto-play prevented by browser policy:", e);
+            });
+        }
+
+        function toggleAudio() {
+            if (isAudioPlaying) {
+                audio.pause();
+                isAudioPlaying = false;
+                musicIcon.classList.remove('fa-compact-disc', 'fa-spin');
+                musicIcon.classList.add('fa-music');
+            } else {
+                playAudio();
+            }
+        }
+
+        // --- 2. ĐỒNG HỒ ĐẾM NGƯỢC (COUNTDOWN TIMER) ---
+        // Thiết lập ngày sinh nhật (Ví dụ: 24/10/2026)
+        const targetDate = new Date("October 24, 2026 18:30:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                document.getElementById("days").innerText = days < 10 ? '0' + days : days;
+                document.getElementById("hours").innerText = hours < 10 ? '0' + hours : hours;
+                document.getElementById("minutes").innerText = minutes < 10 ? '0' + minutes : minutes;
+                document.getElementById("seconds").innerText = seconds < 10 ? '0' + seconds : seconds;
+            }
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // --- 3. FORM RSVP XỬ LÝ ---
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            document.getElementById('rsvpForm').classList.add('hidden');
+            document.getElementById('successMessage').classList.remove('hidden');
+            
+            // Bắn pháo hoa ăn mừng khi gửi form
+            launchWelcomeFireworks();
+        }
+
+        // --- 4. HIỆU ỨNG PHÁO HOA CANVAS (LUXURY FIREWORKS EFFECT) ---
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 1;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.008;
+                this.size = Math.random() * 2.5 + 1;
+            }
+
+            update() {
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+                this.vy += 0.05; // Trọng lực nhẹ
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class Firework {
+            constructor(startX, startY, targetX, targetY) {
+                this.x = startX;
+                this.y = startY;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.distanceToTarget = Math.hypot(targetX - startX, targetY - startY);
+                this.distanceTraveled = 0;
+                this.speed = 4;
+                this.angle = Math.atan2(targetY - startY, targetX - startX);
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                this.exploded = false;
+                
+                // Bảng màu sang trọng: Vàng Kim, Trắng Ánh Bạc, Cam Hồng Luxury
+                const colors = ['#D4AF37', '#FCE081', '#FFFFFF', '#FFD700', '#FFA500', '#E6C200'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update(particles) {
+                if (!this.exploded) {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.distanceTraveled = Math.hypot(this.x - (this.targetX - Math.cos(this.angle) * this.distanceToTarget), this.y - (this.targetY - Math.sin(this.angle) * this.distanceToTarget));
+
+                    if (this.distanceTraveled >= this.distanceToTarget || this.y <= this.targetY) {
+                        this.exploded = true;
+                        this.createParticles(particles);
+                    }
+                }
+            }
+
+            draw() {
+                if (!this.exploded) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 6;
+                    ctx.shadowColor = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            createParticles(particles) {
+                const count = 60 + Math.floor(Math.random() * 40);
+                for (let i = 0; i < count; i++) {
+                    particles.push(new Particle(this.x, this.y, this.color));
+                }
+            }
+        }
+
+        let fireworks = [];
+        let particles = [];
+
+        function animate() {
+            // Hiệu ứng vệt mờ cho pháo hoa
+            ctx.fillStyle = 'rgba(10, 10, 12, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Bắn pháo hoa tự động ngẫu nhiên theo chu kỳ
+            if (Math.random() < 0.03) {
+                const startX = Math.random() * canvas.width;
+                const targetX = Math.random() * canvas.width;
+                const targetY = Math.random() * (canvas.height * 0.5);
+                fireworks.push(new Firework(startX, canvas.height, targetX, targetY));
+            }
+
+            // Cập nhật & vẽ Pháo Hoa
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].update(particles);
+                fireworks[i].draw();
+                if (fireworks[i].exploded) {
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            // Cập nhật & vẽ Hạt Pháo Hoa
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].alpha <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Cho phép người dùng chạm/click vào màn hình để tự tạo pháo hoa
+        window.addEventListener('click', (e) => {
+            // Không kích hoạt khi bấm vào các element tương tác như button hay input
+            if (['BUTTON', 'INPUT', 'TEXTAREA', 'A', 'I', 'SELECT'].includes(e.target.tagName)) return;
+            
+            const startX = canvas.width / 2;
+            fireworks.push(new Firework(startX, canvas.height, e.clientX, e.clientY));
+        });
+
+        function launchWelcomeFireworks() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const targetX = Math.random() * (canvas.width * 0.8) + canvas.width * 0.1;
+                    const targetY = Math.random() * (canvas.height * 0.4) + canvas.height * 0.1;
+                    fireworks.push(new Firework(canvas.width / 2, canvas.height, targetX, targetY));
+                }, i * 300);
+            }
+        }
+
+        // Chạy Animation sau khi trang web nạp xong
+        window.onload = function() {
+            animate();
+        };
+    </script>
+</body>
+</html>
